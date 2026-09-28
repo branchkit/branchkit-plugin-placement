@@ -23,7 +23,7 @@ const (
 // assuming Ctrl+N. Desktops 1-16.
 func (h *Host) switchToDesktop(desktop int) {
 	branchkit.Logf("windows", "switch_space → desktop %d", desktop)
-	if err := h.plugin.NativeSwitchSpace(desktop); err != nil {
+	if err := h.plugin.NativeSwitchSpace(branchkit.NativeSwitchSpaceRequest{SpaceID: desktop}); err != nil {
 		branchkit.Logf("windows", "switch to desktop %d: %v", desktop, err)
 	}
 }
@@ -102,7 +102,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 		return
 	}
 
-	wm, err := h.plugin.NativeWorldModel(nil)
+	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
 		branchkit.Logf("windows", "move-to-space: get world model: %v", err)
 		return
@@ -130,8 +130,9 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 
 	// Fallback: AppleScript to find frontmost window position
 	if !found {
-		result, err := h.plugin.NativeRunApplescript(
-			`tell application "System Events" to tell (first process whose frontmost is true) to get position of window 1`)
+		result, err := h.plugin.NativeRunApplescript(branchkit.NativeRunApplescriptRequest{
+			Script: `tell application "System Events" to tell (first process whose frontmost is true) to get position of window 1`,
+		})
 		if err == nil && result.ExitCode == 0 {
 			parts := strings.Split(result.Stdout, ",")
 			if len(parts) == 2 {
@@ -172,7 +173,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	clickY := winY + 10
 
 	// Warp cursor to title bar
-	if err := h.plugin.NativeWarpCursor(clickX, clickY); err != nil {
+	if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: clickX, Y: clickY}); err != nil {
 		branchkit.Logf("windows", "move-to-space: warp cursor: %v", err)
 		return
 	}
@@ -221,7 +222,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	}
 
 	if restoreCursor {
-		if err := h.plugin.NativeWarpCursor(origCursorX, origCursorY); err != nil {
+		if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: origCursorX, Y: origCursorY}); err != nil {
 			branchkit.Logf("windows", "cursor restore: %v", err)
 		}
 	}
@@ -249,7 +250,7 @@ func releaseOnce(fn func()) func() {
 // trick had been failing silently through it.)
 func (h *Host) mouseButton(direction string) {
 	left := "left"
-	if err := h.plugin.InputMouseButton(direction, &left); err != nil {
+	if err := h.plugin.InputMouseButton(branchkit.InputMouseButtonRequest{Direction: direction, Button: &left}); err != nil {
 		branchkit.Logf("windows", "mouse_button %s: %v", direction, err)
 	}
 }

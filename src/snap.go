@@ -12,7 +12,7 @@ const menuBarHeight = 25
 // handleSnap calculates snap geometry and applies it via batch-set-frames.
 func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	start := time.Now()
-	wm, err := h.plugin.NativeWorldModel(nil)
+	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
 		branchkit.Logf("windows", "snap: failed to get world model: %v", err)
 		return
@@ -72,7 +72,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 		{WindowID: winID, X: frame.X, Y: frame.Y, W: frame.W, H: frame.H},
 	}
 	readback := false
-	if _, err := h.plugin.NativeBatchSetFrames(frames, &readback); err != nil {
+	if _, err := h.plugin.NativeBatchSetFrames(branchkit.NativeBatchSetFramesRequest{Frames: frames, Readback: &readback}); err != nil {
 		branchkit.Logf("windows", "snap: batch-set-frames error: %v", err)
 	} else {
 		branchkit.Logf("windows", "snap: batch-set-frames succeeded (applied in %dms)", time.Since(start).Milliseconds())
