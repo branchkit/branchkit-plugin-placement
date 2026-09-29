@@ -8,7 +8,7 @@ templ WindowsSettings(commands []commandRow) {
 		</div>
 		for _, cmd := range commands {
 			<div class="settings-row">
-				<div class="label">{ cmd.Phrase }</div>
+				<div class="label mono">{ cmd.Phrase }</div>
 				<div class="command-action">{ cmd.Description }</div>
 			</div>
 		}
