@@ -9,7 +9,18 @@
       "input",
       "shell",
       "display"
-    ]
+    ],
+    "capabilities": {
+      "uses": [
+        "native.batch_set_frames",
+        "native.cursor_info",
+        "native.list_spaces",
+        "native.run_applescript",
+        "native.switch_space",
+        "native.warp_cursor",
+        "native.world_model"
+      ]
+    }
   },
   "version": "1.0.0",
   "min_api_version": "0.2.0",
