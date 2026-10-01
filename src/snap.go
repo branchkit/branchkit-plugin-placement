@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"math"
 	"time"
 
@@ -8,6 +9,20 @@ import (
 )
 
 const menuBarHeight = 25
+
+// snappedEventType is emitted for every snap, before the window moves.
+const snappedEventType = "windows.snapped"
+
+// snappedEvent is the payload: which window, the position asked for, and
+// the frame it is about to get.
+func snappedEvent(windowID, position string, frame branchkit.Rect) json.RawMessage {
+	b, _ := json.Marshal(map[string]any{
+		"window_id": windowID,
+		"position":  position,
+		"frame":     map[string]int{"x": frame.X, "y": frame.Y, "w": frame.W, "h": frame.H},
+	})
+	return b
+}
 
 // handleSnap calculates snap geometry and applies it via batch-set-frames.
 func (h *Host) handleSnap(activeWindowID *string, direction string) {
@@ -67,6 +82,16 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	branchkit.Logf("windows", "snap: window=%s direction=%s → x=%d y=%d w=%d h=%d (screen %d: %dx%d)",
 		winID, direction, frame.X, frame.Y, frame.W, frame.H,
 		screenIdx, screen.W, screen.H)
+
+	// Say so BEFORE moving it. A plugin managing this window (a tiler)
+	// takes it as "the user placed this one by hand" and lets go of it;
+	// told after the move, it may already have seen the window leave its
+	// slot, read that as a drag, and put it back. Notifications reach a
+	// subscriber in the order they were sent, so emitting first means the
+	// window is released before any world update shows it moving.
+	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: snappedEventType, Data: snappedEvent(winID, direction, *frame)}); err != nil {
+		branchkit.Logf("windows", "snap: emit %s: %v", snappedEventType, err)
+	}
 
 	frames := []branchkit.WindowFrame{
 		{WindowID: winID, X: frame.X, Y: frame.Y, W: frame.W, H: frame.H},

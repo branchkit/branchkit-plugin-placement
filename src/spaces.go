@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -95,6 +96,15 @@ func (h *Host) originDesktopOrdinal(displays []branchkit.DisplayInfo, pointX, po
 // it hops back to the origin desktop after delivery (the private CGS
 // move-without-switching APIs are dead on modern macOS — verified silent no-op
 // on Sequoia 2026-07-25 — so a visible round trip is the only non-SIP path).
+// movedToSpaceEventType is emitted when a window is sent to another
+// desktop, before it moves.
+const movedToSpaceEventType = "windows.moved_to_space"
+
+func movedToSpaceEvent(windowID string, space int, stay bool) json.RawMessage {
+	b, _ := json.Marshal(map[string]any{"window_id": windowID, "space": space, "stay": stay})
+	return b
+}
+
 func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	if space < 1 || space > 16 {
 		branchkit.Logf("windows", "move-to-space: invalid space %d", space)
@@ -146,6 +156,12 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	if !found {
 		branchkit.Logf("windows", "move-to-space: could not find window position")
 		return
+	}
+
+	// Before the move, for the same reason as windows.snapped: a plugin
+	// placing this window must let go of it before it sees it leave.
+	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: movedToSpaceEventType, Data: movedToSpaceEvent(winID, space, stay)}); err != nil {
+		branchkit.Logf("windows", "move-to-space: emit %s: %v", movedToSpaceEventType, err)
 	}
 
 	// Resolve the return desktop BEFORE the move — afterwards the window (and

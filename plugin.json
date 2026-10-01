@@ -131,6 +131,14 @@
         },
         "description": "Desk mode \u2014 number words switch desktops without repeating 'desk'."
       }
+    },
+    "events": {
+      "windows.snapped": {
+        "description": "A window was snapped, sent BEFORE it moves. Data: window_id, position (as asked: left, right, maximize, center, next, prev, …) and frame {x, y, w, h}. A plugin managing window placement (a tiler) should let go of the window."
+      },
+      "windows.moved_to_space": {
+        "description": "A window is being sent to another desktop, sent BEFORE it moves. Data: window_id, space (1-based desktop number) and stay (whether the user stays on the current desktop)."
+      }
     }
   },
   "consumes": {

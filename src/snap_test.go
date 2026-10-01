@@ -142,3 +142,20 @@ func TestSnapUnknownReturnsNil(t *testing.T) {
 		t.Error("unknown direction should return nil")
 	}
 }
+
+// The snapped event carries what a subscriber needs to let go of the window
+// and know where it is going.
+func TestSnappedEvent_Payload(t *testing.T) {
+	got := string(snappedEvent("42", "left", branchkit.Rect{X: 0, Y: 25, W: 800, H: 875}))
+	want := `{"frame":{"h":875,"w":800,"x":0,"y":25},"position":"left","window_id":"42"}`
+	if got != want {
+		t.Fatalf("payload = %s, want %s", got, want)
+	}
+}
+
+func TestMovedToSpaceEvent_Payload(t *testing.T) {
+	got := string(movedToSpaceEvent("42", 3, true))
+	if want := `{"space":3,"stay":true,"window_id":"42"}`; got != want {
+		t.Fatalf("payload = %s, want %s", got, want)
+	}
+}
