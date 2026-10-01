@@ -8,16 +8,10 @@
       ]
     ],
     "action": {
-      "type": "input.shortcut",
-      "params": {
-        "code": 126,
-        "modifiers": [
-          "ctrl"
-        ]
-      }
+      "type": "placement.overview"
     },
     "category": "Windowing",
-    "description": "Open Mission Control to see all windows."
+    "description": "Show every window: Mission Control on macOS, Task View on Windows, the overview on Linux."
   },
   {
     "pattern": [
@@ -25,16 +19,10 @@
       "window"
     ],
     "action": {
-      "type": "input.shortcut",
-      "params": {
-        "code": 50,
-        "modifiers": [
-          "cmd"
-        ]
-      }
+      "type": "placement.cycle_window"
     },
     "category": "Windowing",
-    "description": "Cycle to the next window of the current app."
+    "description": "Bring the current app's next window to the front."
   },
   {
     "pattern": [

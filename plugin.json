@@ -16,6 +16,7 @@
         "native.focused_window_id",
         "native.list_spaces",
         "native.move_window_to_space",
+        "native.raise_window",
         "native.switch_space",
         "native.warp_cursor",
         "native.window_bounds",
@@ -40,6 +41,15 @@
   },
   "action_prefix": "placement",
   "action_types": {
+    "cycle_window": { "uses": ["native.raise_window"],
+      "label": "Next Window of This App",
+      "consequence": "reversible",
+      "fields": []
+    },
+    "overview": {
+      "label": "Show All Windows",
+      "fields": []
+    },
     "desk_switch": { "uses": ["native.switch_space"],
       "label": "Switch Desktop",
       "consequence": "reversible",

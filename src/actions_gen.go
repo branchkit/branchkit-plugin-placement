@@ -5,6 +5,15 @@ package main
 
 import "github.com/branchkit/plugin-sdk-go"
 
+// CycleWindowParams is the params shape for action "placement.cycle_window (Next Window of This App)".
+type CycleWindowParams struct {
+}
+
+// HandleCycleWindow registers a typed handler for action "placement.cycle_window (Next Window of This App)".
+func HandleCycleWindow(p *branchkit.Plugin, fn branchkit.ActionHandlerFunc) {
+	p.HandleAction("placement.cycle_window", fn)
+}
+
 // DeskSwitchParams is the params shape for action "placement.desk_switch (Switch Desktop)".
 type DeskSwitchParams struct {
 	Space string `json:"space"`
@@ -25,6 +34,15 @@ type MoveToSpaceParams struct {
 // HandleMoveToSpace registers a typed handler for action "placement.move_to_space (Move Window to Space)".
 func HandleMoveToSpace(p *branchkit.Plugin, fn func(MoveToSpaceParams, *branchkit.OnActionRequest) (any, error)) {
 	branchkit.HandleActionTyped(p, "placement.move_to_space", fn)
+}
+
+// OverviewParams is the params shape for action "placement.overview (Show All Windows)".
+type OverviewParams struct {
+}
+
+// HandleOverview registers a typed handler for action "placement.overview (Show All Windows)".
+func HandleOverview(p *branchkit.Plugin, fn branchkit.ActionHandlerFunc) {
+	p.HandleAction("placement.overview", fn)
 }
 
 // SnapPosition is a generated enum type.

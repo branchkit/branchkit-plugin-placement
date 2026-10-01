@@ -14,6 +14,8 @@ func main() {
 	HandleSnap(p, h.handleWindowsSnap)
 	HandleDeskSwitch(p, h.handleDeskSwitch)
 	HandleMoveToSpace(p, h.handleWindowsMoveToSpace)
+	HandleOverview(p, h.handleOverview)
+	HandleCycleWindow(p, h.handleCycleWindow)
 
 	p.Run()
 }
