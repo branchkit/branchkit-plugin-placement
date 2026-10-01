@@ -1,4 +1,4 @@
-module github.com/branchkit/branchkit-plugin-windows
+module github.com/branchkit/branchkit-plugin-placement
 
 go 1.24
 

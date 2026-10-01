@@ -33,12 +33,12 @@ jobs:
         run: |
           mkdir -p out
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
-            go build -C src -o ../out/windows-plugin .
+            go build -C src -o ../out/placement-plugin .
 
       - name: Package, sign, release
         uses: branchkit/registry/release-action@main
         with:
-          binary: out/windows-plugin
+          binary: out/placement-plugin
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           tag: ${{ github.ref_name }}

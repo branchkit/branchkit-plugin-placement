@@ -11,7 +11,7 @@ import (
 const menuBarHeight = 25
 
 // snappedEventType is emitted for every snap, before the window moves.
-const snappedEventType = "windows.snapped"
+const snappedEventType = "placement.snapped"
 
 // snappedEvent is the payload: which window, the position asked for, and
 // the frame it is about to get.
@@ -29,7 +29,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	start := time.Now()
 	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
-		branchkit.Logf("windows", "snap: failed to get world model: %v", err)
+		branchkit.Logf("placement", "snap: failed to get world model: %v", err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 		winID = *wm.ActiveWindowID
 	}
 	if winID == "" {
-		branchkit.Logf("windows", "snap: no active window")
+		branchkit.Logf("placement", "snap: no active window")
 		return
 	}
 
@@ -52,12 +52,12 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 		}
 	}
 	if win == nil {
-		branchkit.Logf("windows", "snap: window %s not found", winID)
+		branchkit.Logf("placement", "snap: window %s not found", winID)
 		return
 	}
 
 	if len(wm.Displays) == 0 {
-		branchkit.Logf("windows", "snap: no displays")
+		branchkit.Logf("placement", "snap: no displays")
 		return
 	}
 
@@ -75,11 +75,11 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 
 	frame := calculateSnapGeometry(win, screen, screenIdx, wm.Displays, direction)
 	if frame == nil {
-		branchkit.Logf("windows", "snap: no geometry for direction %q", direction)
+		branchkit.Logf("placement", "snap: no geometry for direction %q", direction)
 		return
 	}
 
-	branchkit.Logf("windows", "snap: window=%s direction=%s → x=%d y=%d w=%d h=%d (screen %d: %dx%d)",
+	branchkit.Logf("placement", "snap: window=%s direction=%s → x=%d y=%d w=%d h=%d (screen %d: %dx%d)",
 		winID, direction, frame.X, frame.Y, frame.W, frame.H,
 		screenIdx, screen.W, screen.H)
 
@@ -90,7 +90,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	// subscriber in the order they were sent, so emitting first means the
 	// window is released before any world update shows it moving.
 	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: snappedEventType, Data: snappedEvent(winID, direction, *frame)}); err != nil {
-		branchkit.Logf("windows", "snap: emit %s: %v", snappedEventType, err)
+		branchkit.Logf("placement", "snap: emit %s: %v", snappedEventType, err)
 	}
 
 	frames := []branchkit.WindowFrame{
@@ -98,9 +98,9 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	}
 	readback := false
 	if _, err := h.plugin.NativeBatchSetFrames(branchkit.NativeBatchSetFramesRequest{Frames: frames, Readback: &readback}); err != nil {
-		branchkit.Logf("windows", "snap: batch-set-frames error: %v", err)
+		branchkit.Logf("placement", "snap: batch-set-frames error: %v", err)
 	} else {
-		branchkit.Logf("windows", "snap: batch-set-frames succeeded (applied in %dms)", time.Since(start).Milliseconds())
+		branchkit.Logf("placement", "snap: batch-set-frames succeeded (applied in %dms)", time.Since(start).Milliseconds())
 	}
 }
 

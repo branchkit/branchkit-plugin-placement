@@ -24,4 +24,4 @@ jobs:
         run: go test ./...
       - name: build
         working-directory: src
-        run: go build -o ../windows-plugin .
+        run: go build -o ../placement-plugin .

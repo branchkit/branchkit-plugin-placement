@@ -22,9 +22,9 @@ const (
 // hotkey (respecting remaps and auto-enabling disabled shortcuts) instead of
 // assuming Ctrl+N. Desktops 1-16.
 func (h *Host) switchToDesktop(desktop int) {
-	branchkit.Logf("windows", "switch_space → desktop %d", desktop)
+	branchkit.Logf("placement", "switch_space → desktop %d", desktop)
 	if err := h.plugin.NativeSwitchSpace(branchkit.NativeSwitchSpaceRequest{SpaceID: desktop}); err != nil {
-		branchkit.Logf("windows", "switch to desktop %d: %v", desktop, err)
+		branchkit.Logf("placement", "switch to desktop %d: %v", desktop, err)
 	}
 }
 
@@ -53,7 +53,7 @@ func (h *Host) cursorPosition() (x, y int, ok bool) {
 func (h *Host) originDesktopOrdinal(displays []branchkit.DisplayInfo, pointX, pointY int) int {
 	spaces, err := h.plugin.NativeListSpaces()
 	if err != nil {
-		branchkit.Logf("windows", "move-to-space: list spaces: %v", err)
+		branchkit.Logf("placement", "move-to-space: list spaces: %v", err)
 		return 0
 	}
 	displayID := 0
@@ -85,7 +85,7 @@ func (h *Host) originDesktopOrdinal(displays []branchkit.DisplayInfo, pointX, po
 	if result == 0 {
 		result = firstActive
 	}
-	branchkit.Logf("windows", "move-to-space: origin desk=%d (window display=%d, spaces=%s)",
+	branchkit.Logf("placement", "move-to-space: origin desk=%d (window display=%d, spaces=%s)",
 		result, displayID, strings.Join(order, " "))
 	return result
 }
@@ -98,7 +98,7 @@ func (h *Host) originDesktopOrdinal(displays []branchkit.DisplayInfo, pointX, po
 // on Sequoia 2026-07-25 — so a visible round trip is the only non-SIP path).
 // movedToSpaceEventType is emitted when a window is sent to another
 // desktop, before it moves.
-const movedToSpaceEventType = "windows.moved_to_space"
+const movedToSpaceEventType = "placement.moved_to_space"
 
 func movedToSpaceEvent(windowID string, space int, stay bool) json.RawMessage {
 	b, _ := json.Marshal(map[string]any{"window_id": windowID, "space": space, "stay": stay})
@@ -107,13 +107,13 @@ func movedToSpaceEvent(windowID string, space int, stay bool) json.RawMessage {
 
 func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	if space < 1 || space > 16 {
-		branchkit.Logf("windows", "move-to-space: invalid space %d", space)
+		branchkit.Logf("placement", "move-to-space: invalid space %d", space)
 		return
 	}
 
 	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
-		branchkit.Logf("windows", "move-to-space: get world model: %v", err)
+		branchkit.Logf("placement", "move-to-space: get world model: %v", err)
 		return
 	}
 
@@ -154,14 +154,14 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	}
 
 	if !found {
-		branchkit.Logf("windows", "move-to-space: could not find window position")
+		branchkit.Logf("placement", "move-to-space: could not find window position")
 		return
 	}
 
-	// Before the move, for the same reason as windows.snapped: a plugin
+	// Before the move, for the same reason as placement.snapped: a plugin
 	// placing this window must let go of it before it sees it leave.
 	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: movedToSpaceEventType, Data: movedToSpaceEvent(winID, space, stay)}); err != nil {
-		branchkit.Logf("windows", "move-to-space: emit %s: %v", movedToSpaceEventType, err)
+		branchkit.Logf("placement", "move-to-space: emit %s: %v", movedToSpaceEventType, err)
 	}
 
 	// Resolve the return desktop BEFORE the move — afterwards the window (and
@@ -170,7 +170,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	if stay {
 		returnOrdinal = h.originDesktopOrdinal(wm.Displays, winX+winW/2, winY+winH/2)
 		if returnOrdinal == 0 {
-			branchkit.Logf("windows", "move-to-space: stay requested but origin desktop unknown — will follow instead")
+			branchkit.Logf("placement", "move-to-space: stay requested but origin desktop unknown — will follow instead")
 		} else if returnOrdinal == space {
 			returnOrdinal = 0 // already there; nothing to hop back to
 		}
@@ -186,7 +186,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 
 	// Warp cursor to title bar
 	if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: clickX, Y: clickY}); err != nil {
-		branchkit.Logf("windows", "move-to-space: warp cursor: %v", err)
+		branchkit.Logf("placement", "move-to-space: warp cursor: %v", err)
 		return
 	}
 	time.Sleep(cursorSettleDelay)
@@ -235,7 +235,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 
 	if restoreCursor {
 		if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: origCursorX, Y: origCursorY}); err != nil {
-			branchkit.Logf("windows", "cursor restore: %v", err)
+			branchkit.Logf("placement", "cursor restore: %v", err)
 		}
 	}
 }
@@ -263,6 +263,6 @@ func releaseOnce(fn func()) func() {
 func (h *Host) mouseButton(direction string) {
 	left := "left"
 	if err := h.plugin.InputMouseButton(branchkit.InputMouseButtonRequest{Direction: direction, Button: &left}); err != nil {
-		branchkit.Logf("windows", "mouse_button %s: %v", direction, err)
+		branchkit.Logf("placement", "mouse_button %s: %v", direction, err)
 	}
 }

@@ -5,26 +5,26 @@ package main
 
 import "github.com/branchkit/plugin-sdk-go"
 
-// DeskSwitchParams is the params shape for action "windows.desk_switch (Switch Desktop)".
+// DeskSwitchParams is the params shape for action "placement.desk_switch (Switch Desktop)".
 type DeskSwitchParams struct {
 	Space string `json:"space"`
 }
 
-// HandleDeskSwitch registers a typed handler for action "windows.desk_switch (Switch Desktop)".
+// HandleDeskSwitch registers a typed handler for action "placement.desk_switch (Switch Desktop)".
 func HandleDeskSwitch(p *branchkit.Plugin, fn func(DeskSwitchParams, *branchkit.OnActionRequest) (any, error)) {
-	branchkit.HandleActionTyped(p, "windows.desk_switch", fn)
+	branchkit.HandleActionTyped(p, "placement.desk_switch", fn)
 }
 
-// MoveToSpaceParams is the params shape for action "windows.move_to_space (Move Window to Space)".
+// MoveToSpaceParams is the params shape for action "placement.move_to_space (Move Window to Space)".
 type MoveToSpaceParams struct {
 	Space    string  `json:"space"`
 	Stay     *bool   `json:"stay,omitempty"`
 	WindowID *string `json:"window_id,omitempty"`
 }
 
-// HandleMoveToSpace registers a typed handler for action "windows.move_to_space (Move Window to Space)".
+// HandleMoveToSpace registers a typed handler for action "placement.move_to_space (Move Window to Space)".
 func HandleMoveToSpace(p *branchkit.Plugin, fn func(MoveToSpaceParams, *branchkit.OnActionRequest) (any, error)) {
-	branchkit.HandleActionTyped(p, "windows.move_to_space", fn)
+	branchkit.HandleActionTyped(p, "placement.move_to_space", fn)
 }
 
 // SnapPosition is a generated enum type.
@@ -39,12 +39,12 @@ const (
 	SnapPositionPrev     SnapPosition = "prev"
 )
 
-// SnapParams is the params shape for action "windows.snap (Snap Window)".
+// SnapParams is the params shape for action "placement.snap (Snap Window)".
 type SnapParams struct {
 	Position *SnapPosition `json:"position,omitempty"`
 }
 
-// HandleSnap registers a typed handler for action "windows.snap (Snap Window)".
+// HandleSnap registers a typed handler for action "placement.snap (Snap Window)".
 func HandleSnap(p *branchkit.Plugin, fn func(SnapParams, *branchkit.OnActionRequest) (any, error)) {
-	branchkit.HandleActionTyped(p, "windows.snap", fn)
+	branchkit.HandleActionTyped(p, "placement.snap", fn)
 }

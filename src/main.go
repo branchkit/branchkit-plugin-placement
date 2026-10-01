@@ -14,7 +14,7 @@ func main() {
 	HandleSnap(p, h.handleWindowsSnap)
 	HandleDeskSwitch(p, h.handleDeskSwitch)
 	HandleMoveToSpace(p, h.handleWindowsMoveToSpace)
-	p.SettingsCSS(windowsCSS)
+	p.SettingsCSS(placementCSS)
 	p.SettingsTab("commands", renderSettings)
 
 	p.Run()

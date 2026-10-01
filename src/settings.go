@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed settings.css
-var windowsCSS string
+var placementCSS string
 
 // matchesSearch reports whether any field contains the search string
 // (case-insensitive). An empty search matches everything.

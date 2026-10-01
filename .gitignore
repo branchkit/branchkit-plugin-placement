@@ -1,3 +1,4 @@
-windows-plugin
-windows
-src/windows
+placement-plugin
+src/placement-plugin
+# `go build` with no -o names the binary after the module
+src/branchkit-plugin-placement

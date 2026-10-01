@@ -22,7 +22,7 @@ import (
 func (h *Host) handleDeskSwitch(p DeskSwitchParams, _ *branchkit.OnActionRequest) (any, error) {
 	space, err := strconv.Atoi(p.Space)
 	if err != nil || space < 1 || space > 16 {
-		branchkit.Logf("windows", "desk_switch: invalid space: %q", p.Space)
+		branchkit.Logf("placement", "desk_switch: invalid space: %q", p.Space)
 		return nil, nil
 	}
 	// The actuator resolves the user's actual "Switch to Desktop N" symbolic
@@ -43,7 +43,7 @@ func (h *Host) handleWindowsSnap(p SnapParams, req *branchkit.OnActionRequest) (
 func (h *Host) handleWindowsMoveToSpace(p MoveToSpaceParams, req *branchkit.OnActionRequest) (any, error) {
 	space, err := strconv.Atoi(p.Space)
 	if err != nil || space < 1 || space > 9 {
-		branchkit.Logf("windows", "move_to_space: invalid space: %q", p.Space)
+		branchkit.Logf("placement", "move_to_space: invalid space: %q", p.Space)
 		return nil, nil
 	}
 	// Explicit window_id wins over the envelope's active window — a

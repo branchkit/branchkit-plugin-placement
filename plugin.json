@@ -1,7 +1,7 @@
 {
   "$schema": "https://branchkit.dev/schemas/manifest.json",
-  "id": "windows",
-  "name": "Windows",
+  "id": "placement",
+  "name": "Placement",
   "icon": "grid",
   "requires": {
     "privileges": [
@@ -24,21 +24,21 @@
   },
   "version": "1.0.0",
   "min_api_version": "0.2.0",
-  "description": "Native window management \u2014 snap, move to space, switch desktops. Uses built-in OS primitives without a tiling system.",
+  "description": "Put any window where you want it \u2014 a position, a screen, a desktop \u2014 without a pointer. One-shot moves using each OS's own window model; no tiling engine.",
   "author": "BranchKit",
   "publisher": "github:branchkit",
   "dev": {
     "build": [
       ["templ", "generate"],
-      ["go", "build", "-ldflags=-s -w", "-o", "../windows-plugin", "."]
+      ["go", "build", "-ldflags=-s -w", "-o", "../placement-plugin", "."]
     ],
     "build_dir": "src"
   },
-  "run": "./windows-plugin",
+  "run": "./placement-plugin",
   "collection_data": {
     "voice_commands": "commands.json"
   },
-  "action_prefix": "windows",
+  "action_prefix": "placement",
   "action_types": {
     "desk_switch": { "uses": ["native.switch_space"],
       "label": "Switch Desktop",
@@ -93,7 +93,7 @@
   },
   "provides": {
     "collections": {
-      "plugin.windows.snap_mode": {
+      "plugin.placement.snap_mode": {
         "preset": "tag",
         "writers": "platform_only",
         "merge": "collect",
@@ -112,7 +112,7 @@
         },
         "description": "Snap mode \u2014 direction words snap windows without repeating 'snap'."
       },
-      "plugin.windows.desk_mode": {
+      "plugin.placement.desk_mode": {
         "preset": "tag",
         "writers": "platform_only",
         "merge": "collect",
@@ -133,10 +133,10 @@
       }
     },
     "events": {
-      "windows.snapped": {
+      "placement.snapped": {
         "description": "A window was snapped, sent BEFORE it moves. Data: window_id, position (as asked: left, right, maximize, center, next, prev, …) and frame {x, y, w, h}. A plugin managing window placement (a tiler) should let go of the window."
       },
-      "windows.moved_to_space": {
+      "placement.moved_to_space": {
         "description": "A window is being sent to another desktop, sent BEFORE it moves. Data: window_id, space (1-based desktop number) and stay (whether the user stays on the current desktop)."
       }
     }

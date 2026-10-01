@@ -1,19 +1,29 @@
-# BranchKit Windows
+# BranchKit Placement
 
-Window snapping, space switching, and moving windows between spaces for
-[BranchKit](https://branchkit.dev). MIT licensed.
+Put any window where you want it — a position, a screen, a desktop — without
+a pointer, for [BranchKit](https://branchkit.dev). MIT licensed.
 
-Uses built-in OS primitives — no tiling engine, no window server hacks.
+Dragging a window by its title bar and edges takes two steady hands and a
+pointer to express "left half, other monitor". Placement lets you say it. It
+uses each OS's own window model: no tiling engine, no window server hacks.
+
+**Placement places, tiling tiles.** Placement does one-shot moves you ask
+for. Keeping a layout going on its own is a tiling plugin's job, and a tiler
+can build on Placement's events (below) the way any third-party plugin would.
 
 ## What it provides
 
-**Actions** (`windows.*`): `snap` (left, right, maximize, center, next, prev),
-`move_to_space`, `desk_switch`.
+**Actions** (`placement.*`): `snap` (left, right, maximize, center, next,
+prev), `move_to_space`, `desk_switch`.
 
-**Collections**: `plugin.windows.snap_mode` and `plugin.windows.desk_mode` —
-both **exclusive tag gates**.
+**Events**: `placement.snapped` and `placement.moved_to_space`, emitted just
+before the window moves, so a tiler can release the window from its layout
+first.
 
-Requires `windows`, `input`, `shell`, and `display`. macOS.
+**Collections**: `plugin.placement.snap_mode` and
+`plugin.placement.desk_mode` — both **exclusive tag gates**.
+
+Requires the `windows`, `input` and `display` privileges.
 
 ## The interesting part: exclusive gates
 
@@ -50,7 +60,7 @@ or scaffold with `branchkit-cli dev init`.
 ## Build
 
 ```bash
-cd src && go build -o ../windows-plugin .
+cd src && go build -o ../placement-plugin .
 ```
 
 Install into a running BranchKit:
