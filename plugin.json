@@ -29,7 +29,6 @@
   "publisher": "github:branchkit",
   "dev": {
     "build": [
-      ["templ", "generate"],
       ["go", "build", "-ldflags=-s -w", "-o", "../placement-plugin", "."]
     ],
     "build_dir": "src"
@@ -147,13 +146,6 @@
     ]
   },
   "implements": {
-    "on_action": true,
-    "settings_tabs": [
-      {
-        "label": "Commands",
-        "key": "commands"
-      }
-    ],
-    "render_settings": true
+    "on_action": true
   }
 }

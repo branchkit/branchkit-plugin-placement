@@ -2,10 +2,7 @@ module github.com/branchkit/branchkit-plugin-placement
 
 go 1.24
 
-require (
-	github.com/a-h/templ v0.3.1001
-	github.com/branchkit/plugin-sdk-go v0.13.0
-)
+require github.com/branchkit/plugin-sdk-go v0.13.0
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
