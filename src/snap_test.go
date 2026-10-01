@@ -11,7 +11,10 @@ func makeTestWorld() (*branchkit.WindowInfo, branchkit.DisplayInfo, []branchkit.
 		ID: "test-win", AppID: "com.test", AppName: "Test", Title: "Test",
 		X: 100, Y: 100, W: 800, H: 600,
 	}
-	display := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1920, H: 1080}
+	// A 1920x1080 display whose top 25 px is the menu bar: the usable area
+	// the OS reports starts below it.
+	display := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1920, H: 1080,
+		VisibleX: 0, VisibleY: 25, VisibleW: 1920, VisibleH: 1055}
 	return win, display, []branchkit.DisplayInfo{display}
 }
 
@@ -54,9 +57,9 @@ func TestSnapBottom(t *testing.T) {
 	if r == nil {
 		t.Fatal("expected geometry")
 	}
-	// halfH = (1080-25)/2 = 527, y = 25 + 527 = 552
-	if r.X != 0 || r.Y != 552 || r.W != 1920 || r.H != 527 {
-		t.Errorf("bottom: got (%d,%d %dx%d), want (0,552 1920x527)", r.X, r.Y, r.W, r.H)
+	// top half is 1055/2 = 527; the bottom half takes the other 528 at y = 25 + 527
+	if r.X != 0 || r.Y != 552 || r.W != 1920 || r.H != 528 {
+		t.Errorf("bottom: got (%d,%d %dx%d), want (0,552 1920x528)", r.X, r.Y, r.W, r.H)
 	}
 }
 
@@ -79,8 +82,8 @@ func TestSnapCenter(t *testing.T) {
 	if r == nil {
 		t.Fatal("expected geometry")
 	}
-	if r.X != 480 || r.Y != 270 || r.W != 960 || r.H != 540 {
-		t.Errorf("center: got (%d,%d %dx%d), want (480,270 960x540)", r.X, r.Y, r.W, r.H)
+	if r.X != 480 || r.Y != 288 || r.W != 960 || r.H != 527 {
+		t.Errorf("center: got (%d,%d %dx%d), want (480,288 960x527)", r.X, r.Y, r.W, r.H)
 	}
 }
 
@@ -157,5 +160,54 @@ func TestMovedToSpaceEvent_Payload(t *testing.T) {
 	got := string(movedToSpaceEvent("42", 3, true))
 	if want := `{"space":3,"stay":true,"window_id":"42"}`; got != want {
 		t.Fatalf("payload = %s, want %s", got, want)
+	}
+}
+
+// A Dock on the left and a taller menu bar (a notched MacBook): every
+// position stays inside the usable area, never under either.
+func TestSnapStaysInsideTheUsableArea(t *testing.T) {
+	win, _, _ := makeTestWorld()
+	d := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1512, H: 982,
+		VisibleX: 64, VisibleY: 38, VisibleW: 1448, VisibleH: 944}
+	for _, dir := range []string{"left", "right", "top", "bottom", "maximize", "center"} {
+		r := calculateSnapGeometry(win, d, 0, []branchkit.DisplayInfo{d}, dir)
+		if r == nil {
+			t.Fatalf("%s: expected geometry", dir)
+		}
+		if r.X < 64 || r.Y < 38 || r.X+r.W > 64+1448 || r.Y+r.H > 38+944 {
+			t.Errorf("%s: (%d,%d %dx%d) leaves the usable area (64,38 1448x944)", dir, r.X, r.Y, r.W, r.H)
+		}
+	}
+	l := calculateSnapGeometry(win, d, 0, []branchkit.DisplayInfo{d}, "left")
+	r := calculateSnapGeometry(win, d, 0, []branchkit.DisplayInfo{d}, "right")
+	if l.X != 64 || l.X+l.W != r.X || r.X+r.W != 64+1448 {
+		t.Errorf("halves must tile the usable area: left (%d,%d), right (%d,%d)", l.X, l.W, r.X, r.W)
+	}
+}
+
+// A display that reports no visible bounds falls back to its full frame.
+func TestSnapWithoutVisibleBoundsUsesTheFullDisplay(t *testing.T) {
+	win, _, _ := makeTestWorld()
+	d := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1920, H: 1080}
+	r := calculateSnapGeometry(win, d, 0, []branchkit.DisplayInfo{d}, "maximize")
+	if r.X != 0 || r.Y != 0 || r.W != 1920 || r.H != 1080 {
+		t.Errorf("maximize: got (%d,%d %dx%d), want (0,0 1920x1080)", r.X, r.Y, r.W, r.H)
+	}
+}
+
+// A window filling one display's usable area fills the next display's,
+// even when the two areas are inset differently.
+func TestSnapNextMonitorMapsBetweenUsableAreas(t *testing.T) {
+	d1 := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1920, H: 1080,
+		VisibleX: 0, VisibleY: 25, VisibleW: 1920, VisibleH: 1055}
+	d2 := branchkit.DisplayInfo{ID: 2, X: 1920, Y: 0, W: 2560, H: 1440,
+		VisibleX: 1920, VisibleY: 0, VisibleW: 2560, VisibleH: 1392} // taskbar-style bar at the bottom
+	win := &branchkit.WindowInfo{ID: "w", X: 0, Y: 25, W: 1920, H: 1055}
+	r := calculateSnapGeometry(win, d1, 0, []branchkit.DisplayInfo{d1, d2}, "next")
+	if r == nil {
+		t.Fatal("expected geometry")
+	}
+	if r.X != 1920 || r.Y != 0 || r.W != 2560 || r.H != 1392 {
+		t.Errorf("next: got (%d,%d %dx%d), want (1920,0 2560x1392)", r.X, r.Y, r.W, r.H)
 	}
 }

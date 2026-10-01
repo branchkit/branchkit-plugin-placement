@@ -8,8 +8,6 @@ import (
 	"github.com/branchkit/plugin-sdk-go"
 )
 
-const menuBarHeight = 25
-
 // snappedEventType is emitted for every snap, before the window moves.
 const snappedEventType = "placement.snapped"
 
@@ -104,51 +102,32 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) {
 	}
 }
 
+// usableArea is the part of a display a window may fill: the display minus
+// the menu bar, Dock, taskbar or panels, as the OS reports it (NSScreen
+// visibleFrame on macOS, the work area on Windows, _NET_WORKAREA on X11).
+// A display that reports no visible bounds falls back to its full frame.
+func usableArea(d branchkit.DisplayInfo) branchkit.Rect {
+	if d.VisibleW > 0 && d.VisibleH > 0 {
+		return branchkit.Rect{X: d.VisibleX, Y: d.VisibleY, W: d.VisibleW, H: d.VisibleH}
+	}
+	return branchkit.Rect{X: d.X, Y: d.Y, W: d.W, H: d.H}
+}
+
 func calculateSnapGeometry(win *branchkit.WindowInfo, screen branchkit.DisplayInfo, screenIdx int, displays []branchkit.DisplayInfo, direction string) *branchkit.Rect {
+	a := usableArea(screen)
 	switch direction {
 	case "left":
-		return &branchkit.Rect{
-			X: screen.X,
-			Y: screen.Y + menuBarHeight,
-			W: screen.W / 2,
-			H: screen.H - menuBarHeight,
-		}
+		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W / 2, H: a.H}
 	case "right":
-		return &branchkit.Rect{
-			X: screen.X + screen.W/2,
-			Y: screen.Y + menuBarHeight,
-			W: screen.W / 2,
-			H: screen.H - menuBarHeight,
-		}
+		return &branchkit.Rect{X: a.X + a.W/2, Y: a.Y, W: a.W - a.W/2, H: a.H}
 	case "top", "up":
-		return &branchkit.Rect{
-			X: screen.X,
-			Y: screen.Y + menuBarHeight,
-			W: screen.W,
-			H: (screen.H - menuBarHeight) / 2,
-		}
+		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W, H: a.H / 2}
 	case "bottom", "down":
-		halfH := (screen.H - menuBarHeight) / 2
-		return &branchkit.Rect{
-			X: screen.X,
-			Y: screen.Y + menuBarHeight + halfH,
-			W: screen.W,
-			H: halfH,
-		}
+		return &branchkit.Rect{X: a.X, Y: a.Y + a.H/2, W: a.W, H: a.H - a.H/2}
 	case "maximize", "full":
-		return &branchkit.Rect{
-			X: screen.X,
-			Y: screen.Y + menuBarHeight,
-			W: screen.W,
-			H: screen.H - menuBarHeight,
-		}
+		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W, H: a.H}
 	case "center":
-		return &branchkit.Rect{
-			X: screen.X + screen.W/4,
-			Y: screen.Y + screen.H/4,
-			W: screen.W / 2,
-			H: screen.H / 2,
-		}
+		return &branchkit.Rect{X: a.X + a.W/4, Y: a.Y + a.H/4, W: a.W / 2, H: a.H / 2}
 	case "next", "next monitor", "other screen", "move next",
 		"prev", "previous monitor", "move back":
 		if len(displays) < 2 {
@@ -160,19 +139,20 @@ func calculateSnapGeometry(win *branchkit.WindowInfo, screen branchkit.DisplayIn
 		} else {
 			nextIdx = (screenIdx + 1) % len(displays)
 		}
-		target := displays[nextIdx]
+		t := usableArea(displays[nextIdx])
 
-		// Proportional mapping
-		relX := float64(win.X-screen.X) / float64(screen.W)
-		relY := float64(win.Y-screen.Y) / float64(screen.H)
-		relW := float64(win.W) / float64(screen.W)
-		relH := float64(win.H) / float64(screen.H)
+		// Same place relative to the usable area, so a window that filled
+		// one display's usable area fills the next one's.
+		relX := float64(win.X-a.X) / float64(a.W)
+		relY := float64(win.Y-a.Y) / float64(a.H)
+		relW := float64(win.W) / float64(a.W)
+		relH := float64(win.H) / float64(a.H)
 
 		return &branchkit.Rect{
-			X: target.X + int(math.Round(relX*float64(target.W))),
-			Y: target.Y + int(math.Round(relY*float64(target.H))),
-			W: int(math.Round(relW * float64(target.W))),
-			H: int(math.Round(relH * float64(target.H))),
+			X: t.X + int(math.Round(relX*float64(t.W))),
+			Y: t.Y + int(math.Round(relY*float64(t.H))),
+			W: int(math.Round(relW * float64(t.W))),
+			H: int(math.Round(relH * float64(t.H))),
 		}
 	default:
 		return nil
