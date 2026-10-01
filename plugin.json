@@ -7,17 +7,17 @@
     "privileges": [
       "windows",
       "input",
-      "shell",
       "display"
     ],
     "capabilities": {
       "uses": [
         "native.batch_set_frames",
         "native.cursor_info",
+        "native.focused_window_id",
         "native.list_spaces",
-        "native.run_applescript",
         "native.switch_space",
         "native.warp_cursor",
+        "native.window_bounds",
         "native.world_model"
       ]
     }
@@ -42,6 +42,7 @@
   "action_types": {
     "desk_switch": { "uses": ["native.switch_space"],
       "label": "Switch Desktop",
+      "consequence": "reversible",
       "fields": [
         {
           "key": "space",
@@ -54,6 +55,7 @@
     },
     "snap": {
       "label": "Snap Window",
+      "consequence": "reversible",
       "fields": [
         {
           "key": "position",

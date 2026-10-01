@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -128,21 +127,18 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 		}
 	}
 
-	// Fallback: AppleScript to find frontmost window position
+	// Fallback: ask for the window's bounds directly (the world model can
+	// miss a window that just appeared). Without an id, the focused one.
 	if !found {
-		result, err := h.plugin.NativeRunApplescript(branchkit.NativeRunApplescriptRequest{
-			Script: `tell application "System Events" to tell (first process whose frontmost is true) to get position of window 1`,
-		})
-		if err == nil && result.ExitCode == 0 {
-			parts := strings.Split(result.Stdout, ",")
-			if len(parts) == 2 {
-				x, e1 := strconv.Atoi(strings.TrimSpace(parts[0]))
-				y, e2 := strconv.Atoi(strings.TrimSpace(parts[1]))
-				if e1 == nil && e2 == nil {
-					winX = x
-					winY = y
-					found = true
-				}
+		if winID == "" {
+			if focused, err := h.plugin.NativeFocusedWindowID(); err == nil && focused != nil {
+				winID = focused.WindowID
+			}
+		}
+		if winID != "" {
+			if b, err := h.plugin.NativeWindowBounds(branchkit.NativeWindowBoundsRequest{WindowID: winID}); err == nil {
+				winX, winY, winW, winH = b.X, b.Y, b.W, b.H
+				found = true
 			}
 		}
 	}
