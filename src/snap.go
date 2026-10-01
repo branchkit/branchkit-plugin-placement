@@ -98,6 +98,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) error {
 	if _, err := h.plugin.NativeBatchSetFrames(branchkit.NativeBatchSetFramesRequest{Frames: frames, Readback: &readback}); err != nil {
 		return fmt.Errorf("snap: move the window: %w", err)
 	}
+	h.history.push(winID, branchkit.Rect{X: win.X, Y: win.Y, W: win.W, H: win.H})
 	branchkit.Logf("placement", "snap: batch-set-frames succeeded (applied in %dms)", time.Since(start).Milliseconds())
 	return nil
 }

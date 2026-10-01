@@ -66,3 +66,12 @@ type SnapParams struct {
 func HandleSnap(p *branchkit.Plugin, fn func(SnapParams, *branchkit.OnActionRequest) (any, error)) {
 	branchkit.HandleActionTyped(p, "placement.snap", fn)
 }
+
+// UndoParams is the params shape for action "placement.undo (Put Window Back)".
+type UndoParams struct {
+}
+
+// HandleUndo registers a typed handler for action "placement.undo (Put Window Back)".
+func HandleUndo(p *branchkit.Plugin, fn branchkit.ActionHandlerFunc) {
+	p.HandleAction("placement.undo", fn)
+}

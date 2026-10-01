@@ -46,6 +46,11 @@
       "consequence": "reversible",
       "fields": []
     },
+    "undo": {
+      "label": "Put Window Back",
+      "consequence": "reversible",
+      "fields": []
+    },
     "overview": {
       "label": "Show All Windows",
       "fields": []

@@ -26,6 +26,18 @@
   },
   {
     "pattern": [
+      "put",
+      "it",
+      "back"
+    ],
+    "action": {
+      "type": "placement.undo"
+    },
+    "category": "Windowing",
+    "description": "Put the window back where it was before you last snapped it. Say it again to go further back."
+  },
+  {
+    "pattern": [
       "snap"
     ],
     "category": "Snap Mode",

@@ -16,6 +16,7 @@ func main() {
 	HandleMoveToSpace(p, h.handleWindowsMoveToSpace)
 	HandleOverview(p, h.handleOverview)
 	HandleCycleWindow(p, h.handleCycleWindow)
+	HandleUndo(p, h.handleUndo)
 
 	p.Run()
 }
