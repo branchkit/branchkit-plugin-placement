@@ -22,11 +22,12 @@ const (
 // actuator, which resolves the user's own "Switch to Desktop N" symbolic
 // hotkey (respecting remaps and auto-enabling disabled shortcuts) instead of
 // assuming Ctrl+N. Desktops 1-16.
-func (h *Host) switchToDesktop(desktop int) {
+func (h *Host) switchToDesktop(desktop int) error {
 	branchkit.Logf("placement", "switch_space → desktop %d", desktop)
 	if err := h.plugin.NativeSwitchSpace(branchkit.NativeSwitchSpaceRequest{SpaceID: desktop}); err != nil {
-		branchkit.Logf("placement", "switch to desktop %d: %v", desktop, err)
+		return fmt.Errorf("switch to desktop %d: %w", desktop, err)
 	}
+	return nil
 }
 
 // cursorPosition returns the current cursor location, or ok=false.
@@ -113,16 +114,14 @@ func movedToSpaceEvent(windowID string, space int, stay bool) json.RawMessage {
 // move a window between desktops (Windows, GNOME) the platform refuses the
 // native call, and because the manifest lists it in move_to_space's `uses`
 // the command is not offered there at all.
-func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
+func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) error {
 	if space < 1 || (runtime.GOOS == "darwin" && space > 16) {
-		branchkit.Logf("placement", "move-to-space: invalid space %d", space)
-		return
+		return fmt.Errorf("move to desktop: %d is not a desktop number", space)
 	}
 
 	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
-		branchkit.Logf("placement", "move-to-space: get world model: %v", err)
-		return
+		return fmt.Errorf("move to desktop %d: read the windows: %w", space, err)
 	}
 
 	winID := ""
@@ -162,8 +161,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	}
 
 	if !found {
-		branchkit.Logf("placement", "move-to-space: could not find window position")
-		return
+		return fmt.Errorf("move to desktop %d: no window to move", space)
 	}
 
 	// Before the move, for the same reason as placement.snapped: a plugin
@@ -173,10 +171,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	}
 
 	if runtime.GOOS != "darwin" {
-		if err := h.moveToSpaceNatively(winID, space, stay); err != nil {
-			branchkit.Logf("placement", "move-to-space: %v", err)
-		}
-		return
+		return h.moveToSpaceNatively(winID, space, stay)
 	}
 
 	// Resolve the return desktop BEFORE the move — afterwards the window (and
@@ -201,8 +196,7 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 
 	// Warp cursor to title bar
 	if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: clickX, Y: clickY}); err != nil {
-		branchkit.Logf("placement", "move-to-space: warp cursor: %v", err)
-		return
+		return fmt.Errorf("move to desktop %d: reach the title bar: %w", space, err)
 	}
 	time.Sleep(cursorSettleDelay)
 
@@ -226,32 +220,52 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	// ORDER is load-bearing on the happy path: the drop has to land before the
 	// return-hop below, so the release can't be moved to function exit. The
 	// latch releases exactly once, wherever it happens first.
-	releaseMouse := releaseOnce(func() { h.mouseButton("release") })
-	h.mouseButton("press")
+	//
+	// A press that failed latched nothing, so the release is armed only
+	// once the press has landed: an up event with no down is a stray click.
+	if err := h.mouseButton("press"); err != nil {
+		h.restoreCursor(origCursorX, origCursorY, restoreCursor)
+		return fmt.Errorf("move to desktop %d: grab the window: %w", space, err)
+	}
+	releaseMouse := releaseOnce(func() { _ = h.mouseButton("release") })
 	defer releaseMouse()
-	h.mouseButton("drag")
+	_ = h.mouseButton("drag")
 	time.Sleep(mouseDownHoldDelay)
 
 	// Switch to the target desktop from under the held window (symbolic
 	// hotkey — respects the user's actual shortcut config)
-	h.switchToDesktop(space)
-
-	time.Sleep(spaceTransitDelay)
+	switchErr := h.switchToDesktop(space)
+	if switchErr == nil {
+		time.Sleep(spaceTransitDelay)
+	}
 
 	// Mouse up — here, not at function exit, so the drop lands before any
 	// return-hop.
 	releaseMouse()
 
+	var hopErr error
 	// Stay variant: hop back to the origin desktop once the drop has landed.
-	if returnOrdinal != 0 {
+	if switchErr == nil && returnOrdinal != 0 {
 		time.Sleep(spaceTransitDelay)
-		h.switchToDesktop(returnOrdinal)
+		if err := h.switchToDesktop(returnOrdinal); err != nil {
+			hopErr = fmt.Errorf("moved the window to desktop %d but could not come back: %w", space, err)
+		}
 	}
 
-	if restoreCursor {
-		if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: origCursorX, Y: origCursorY}); err != nil {
-			branchkit.Logf("placement", "cursor restore: %v", err)
-		}
+	h.restoreCursor(origCursorX, origCursorY, restoreCursor)
+	if switchErr != nil {
+		return fmt.Errorf("move to desktop %d: %w", space, switchErr)
+	}
+	return hopErr
+}
+
+// restoreCursor puts the cursor back where the person left it.
+func (h *Host) restoreCursor(x, y int, ok bool) {
+	if !ok {
+		return
+	}
+	if err := h.plugin.NativeWarpCursor(branchkit.NativeWarpCursorRequest{X: x, Y: y}); err != nil {
+		branchkit.Logf("placement", "cursor restore: %v", err)
 	}
 }
 
@@ -275,11 +289,13 @@ func releaseOnce(fn func()) func() {
 // the input.mouse_button RPC. (The old raw `dispatch` route is denied to
 // plugin callers by the operation auth layer — the grab half of the drag
 // trick had been failing silently through it.)
-func (h *Host) mouseButton(direction string) {
+func (h *Host) mouseButton(direction string) error {
 	left := "left"
 	if err := h.plugin.InputMouseButton(branchkit.InputMouseButtonRequest{Direction: direction, Button: &left}); err != nil {
 		branchkit.Logf("placement", "mouse_button %s: %v", direction, err)
+		return err
 	}
+	return nil
 }
 
 // moveToSpaceNatively asks the OS to move the window to desktop `desk`
@@ -302,7 +318,7 @@ func (h *Host) moveToSpaceNatively(winID string, desk int, stay bool) error {
 		return fmt.Errorf("the window manager did not move the window to desktop %d", desk)
 	}
 	if !stay {
-		h.switchToDesktop(desk)
+		return h.switchToDesktop(desk)
 	}
 	return nil
 }
