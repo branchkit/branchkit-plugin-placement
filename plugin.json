@@ -15,6 +15,7 @@
         "native.cursor_info",
         "native.focused_window_id",
         "native.list_spaces",
+        "native.move_window_to_space",
         "native.switch_space",
         "native.warp_cursor",
         "native.window_bounds",
@@ -65,7 +66,7 @@
         }
       ]
     },
-    "move_to_space": { "uses": ["native.warp_cursor", "native.switch_space"],
+    "move_to_space": { "uses": ["native.move_window_to_space", "native.switch_space"],
       "label": "Move Window to Space",
       "fields": [
         {

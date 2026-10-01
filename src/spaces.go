@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"runtime"
 	"strings"
 	"time"
 
@@ -90,12 +91,6 @@ func (h *Host) originDesktopOrdinal(displays []branchkit.DisplayInfo, pointX, po
 	return result
 }
 
-// handleMoveToSpace moves the active window to the given Mission Control space
-// by holding the title bar with the mouse, pressing Ctrl+N, then releasing —
-// which inherently navigates to the target space with the window. With `stay`,
-// it hops back to the origin desktop after delivery (the private CGS
-// move-without-switching APIs are dead on modern macOS — verified silent no-op
-// on Sequoia 2026-07-25 — so a visible round trip is the only non-SIP path).
 // movedToSpaceEventType is emitted when a window is sent to another
 // desktop, before it moves.
 const movedToSpaceEventType = "placement.moved_to_space"
@@ -105,8 +100,21 @@ func movedToSpaceEvent(windowID string, space int, stay bool) json.RawMessage {
 	return b
 }
 
+// handleMoveToSpace moves the active window to the given Mission Control space
+// by holding the title bar with the mouse, pressing Ctrl+N, then releasing —
+// which inherently navigates to the target space with the window. With `stay`,
+// it hops back to the origin desktop after delivery (the private CGS
+// move-without-switching APIs are dead on modern macOS — verified silent no-op
+// on Sequoia 2026-07-25 — so a visible round trip is the only non-SIP path).
+//
+// That drag is macOS's way. Elsewhere the OS moves the window itself
+// (native.move_window_to_space: EWMH on X11, IPC on sway), and the plugin
+// switches desktop afterwards unless asked to stay. Where the OS cannot
+// move a window between desktops (Windows, GNOME) the platform refuses the
+// native call, and because the manifest lists it in move_to_space's `uses`
+// the command is not offered there at all.
 func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
-	if space < 1 || space > 16 {
+	if space < 1 || (runtime.GOOS == "darwin" && space > 16) {
 		branchkit.Logf("placement", "move-to-space: invalid space %d", space)
 		return
 	}
@@ -162,6 +170,13 @@ func (h *Host) handleMoveToSpace(activeWindowID *string, space int, stay bool) {
 	// placing this window must let go of it before it sees it leave.
 	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: movedToSpaceEventType, Data: movedToSpaceEvent(winID, space, stay)}); err != nil {
 		branchkit.Logf("placement", "move-to-space: emit %s: %v", movedToSpaceEventType, err)
+	}
+
+	if runtime.GOOS != "darwin" {
+		if err := h.moveToSpaceNatively(winID, space, stay); err != nil {
+			branchkit.Logf("placement", "move-to-space: %v", err)
+		}
+		return
 	}
 
 	// Resolve the return desktop BEFORE the move — afterwards the window (and
@@ -265,4 +280,46 @@ func (h *Host) mouseButton(direction string) {
 	if err := h.plugin.InputMouseButton(branchkit.InputMouseButtonRequest{Direction: direction, Button: &left}); err != nil {
 		branchkit.Logf("placement", "mouse_button %s: %v", direction, err)
 	}
+}
+
+// moveToSpaceNatively asks the OS to move the window to desktop `desk`
+// (1-based, the same numbering as switch_space), then follows it there
+// unless `stay`.
+func (h *Host) moveToSpaceNatively(winID string, desk int, stay bool) error {
+	spaces, err := h.plugin.NativeListSpaces()
+	if err != nil {
+		return fmt.Errorf("list desktops: %w", err)
+	}
+	spaceID, err := deskSpaceID(spaces, desk)
+	if err != nil {
+		return err
+	}
+	moved, err := h.plugin.NativeMoveWindowToSpace(branchkit.NativeMoveWindowToSpaceRequest{WindowID: winID, SpaceID: spaceID})
+	if err != nil {
+		return fmt.Errorf("move window to desktop %d: %w", desk, err)
+	}
+	if !moved {
+		return fmt.Errorf("the window manager did not move the window to desktop %d", desk)
+	}
+	if !stay {
+		h.switchToDesktop(desk)
+	}
+	return nil
+}
+
+// deskSpaceID maps a desktop number to the opaque id native.list_spaces
+// gives it: desktop N is the Nth user space in the order listed, the
+// numbering switch_space and WindowInfo.desk use.
+func deskSpaceID(spaces []branchkit.SpaceInfo, desk int) (int, error) {
+	n := 0
+	for _, s := range spaces {
+		if s.SpaceType != "user" {
+			continue
+		}
+		n++
+		if n == desk {
+			return s.SpaceID, nil
+		}
+	}
+	return 0, fmt.Errorf("there is no desktop %d (this system has %d)", desk, n)
 }

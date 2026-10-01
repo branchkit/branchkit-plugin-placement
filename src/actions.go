@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"strconv"
 
 	"github.com/branchkit/plugin-sdk-go"
@@ -21,7 +22,9 @@ import (
 
 func (h *Host) handleDeskSwitch(p DeskSwitchParams, _ *branchkit.OnActionRequest) (any, error) {
 	space, err := strconv.Atoi(p.Space)
-	if err != nil || space < 1 || space > 16 {
+	// macOS numbers its "Switch to Desktop N" hotkeys 1-16; elsewhere the
+	// platform checks the number against the desktops that exist.
+	if err != nil || space < 1 || (runtime.GOOS == "darwin" && space > 16) {
 		branchkit.Logf("placement", "desk_switch: invalid space: %q", p.Space)
 		return nil, nil
 	}
@@ -42,7 +45,7 @@ func (h *Host) handleWindowsSnap(p SnapParams, req *branchkit.OnActionRequest) (
 
 func (h *Host) handleWindowsMoveToSpace(p MoveToSpaceParams, req *branchkit.OnActionRequest) (any, error) {
 	space, err := strconv.Atoi(p.Space)
-	if err != nil || space < 1 || space > 9 {
+	if err != nil || space < 1 {
 		branchkit.Logf("placement", "move_to_space: invalid space: %q", p.Space)
 		return nil, nil
 	}
