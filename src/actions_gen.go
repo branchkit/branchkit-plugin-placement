@@ -81,6 +81,17 @@ func HandleSnap(p *branchkit.Plugin, fn func(SnapParams, *branchkit.OnActionRequ
 	branchkit.HandleActionTyped(p, "placement.snap", fn)
 }
 
+// ToScreenParams is the params shape for action "placement.to_screen (Move Window to Screen)".
+type ToScreenParams struct {
+	Screen string  `json:"screen"`
+	App    *string `json:"app,omitempty"`
+}
+
+// HandleToScreen registers a typed handler for action "placement.to_screen (Move Window to Screen)".
+func HandleToScreen(p *branchkit.Plugin, fn func(ToScreenParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.to_screen", fn)
+}
+
 // UndoParams is the params shape for action "placement.undo (Put Window Back)".
 type UndoParams struct {
 }

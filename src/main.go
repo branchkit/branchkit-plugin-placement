@@ -17,6 +17,7 @@ func main() {
 	HandleOverview(p, h.handleOverview)
 	HandleCycleWindow(p, h.handleCycleWindow)
 	HandleUndo(p, h.handleUndo)
+	HandleToScreen(p, h.handleToScreen)
 
 	p.Run()
 }

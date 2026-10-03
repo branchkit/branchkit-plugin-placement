@@ -26,10 +26,30 @@ func snappedEvent(windowID, position string, frame branchkit.Rect) json.RawMessa
 // handleSnap calculates snap geometry and applies it via batch-set-frames.
 // The error says what kept the window from moving, for the caller to show.
 func (h *Host) handleSnap(activeWindowID *string, direction string) error {
+	return h.place(activeWindowID, "snap", direction,
+		func(win *branchkit.WindowInfo, screenIdx int, displays []branchkit.DisplayInfo) (*branchkit.Rect, error) {
+			frame := calculateSnapGeometry(win, displays[screenIdx], screenIdx, displays, direction)
+			if frame == nil {
+				if (direction == "next" || direction == "prev") && len(displays) < 2 {
+					return nil, fmt.Errorf("there is only one display")
+				}
+				return nil, fmt.Errorf("%q is not a position", direction)
+			}
+			return frame, nil
+		})
+}
+
+// place moves one window to the frame `compute` picks for it: it finds
+// the window (the given id, else the focused one) and the display its
+// centre is on, announces the move, applies it, and records the old frame
+// for "put it back". verb names the command in errors; position goes in
+// the placement.snapped event.
+func (h *Host) place(activeWindowID *string, verb, position string,
+	compute func(win *branchkit.WindowInfo, screenIdx int, displays []branchkit.DisplayInfo) (*branchkit.Rect, error)) error {
 	start := time.Now()
 	wm, err := h.plugin.NativeWorldModel(branchkit.NativeWorldModelRequest{})
 	if err != nil {
-		return fmt.Errorf("snap: read the windows: %w", err)
+		return fmt.Errorf("%s: read the windows: %w", verb, err)
 	}
 
 	winID := ""
@@ -39,7 +59,7 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) error {
 		winID = *wm.ActiveWindowID
 	}
 	if winID == "" {
-		return fmt.Errorf("snap: no window is focused")
+		return fmt.Errorf("%s: no window is focused", verb)
 	}
 
 	var win *branchkit.WindowInfo
@@ -50,36 +70,19 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) error {
 		}
 	}
 	if win == nil {
-		return fmt.Errorf("snap: window %s is not on screen", winID)
+		return fmt.Errorf("%s: window %s is not on screen", verb, winID)
 	}
-
 	if len(wm.Displays) == 0 {
-		return fmt.Errorf("snap: no display is connected")
+		return fmt.Errorf("%s: no display is connected", verb)
 	}
+	screenIdx := displayOf(win, wm.Displays)
 
-	// Find which display the window center is on
-	centerX := win.X + win.W/2
-	centerY := win.Y + win.H/2
-	screenIdx := 0
-	for i, d := range wm.Displays {
-		if centerX >= d.X && centerX < d.X+d.W && centerY >= d.Y && centerY < d.Y+d.H {
-			screenIdx = i
-			break
-		}
+	frame, err := compute(win, screenIdx, wm.Displays)
+	if err != nil {
+		return fmt.Errorf("%s %s: %w", verb, position, err)
 	}
-	screen := wm.Displays[screenIdx]
-
-	frame := calculateSnapGeometry(win, screen, screenIdx, wm.Displays, direction)
-	if frame == nil {
-		if (direction == "next" || direction == "prev") && len(wm.Displays) < 2 {
-			return fmt.Errorf("snap %s: there is only one display", direction)
-		}
-		return fmt.Errorf("snap: %q is not a position", direction)
-	}
-
-	branchkit.Logf("placement", "snap: window=%s direction=%s → x=%d y=%d w=%d h=%d (screen %d: %dx%d)",
-		winID, direction, frame.X, frame.Y, frame.W, frame.H,
-		screenIdx, screen.W, screen.H)
+	branchkit.Logf("placement", "%s: window=%s position=%s → x=%d y=%d w=%d h=%d (from screen %d)",
+		verb, winID, position, frame.X, frame.Y, frame.W, frame.H, screenIdx)
 
 	// Say so BEFORE moving it. A plugin managing this window (a tiler)
 	// takes it as "the user placed this one by hand" and lets go of it;
@@ -87,8 +90,8 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) error {
 	// slot, read that as a drag, and put it back. Notifications reach a
 	// subscriber in the order they were sent, so emitting first means the
 	// window is released before any world update shows it moving.
-	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: snappedEventType, Data: snappedEvent(winID, direction, *frame)}); err != nil {
-		branchkit.Logf("placement", "snap: emit %s: %v", snappedEventType, err)
+	if err := h.plugin.EventsEmit(branchkit.EventsEmitRequest{EventType: snappedEventType, Data: snappedEvent(winID, position, *frame)}); err != nil {
+		branchkit.Logf("placement", "%s: emit %s: %v", verb, snappedEventType, err)
 	}
 
 	frames := []branchkit.WindowFrame{
@@ -96,11 +99,22 @@ func (h *Host) handleSnap(activeWindowID *string, direction string) error {
 	}
 	readback := false
 	if _, err := h.plugin.NativeBatchSetFrames(branchkit.NativeBatchSetFramesRequest{Frames: frames, Readback: &readback}); err != nil {
-		return fmt.Errorf("snap: move the window: %w", err)
+		return fmt.Errorf("%s: move the window: %w", verb, err)
 	}
 	h.history.push(winID, branchkit.Rect{X: win.X, Y: win.Y, W: win.W, H: win.H})
-	branchkit.Logf("placement", "snap: batch-set-frames succeeded (applied in %dms)", time.Since(start).Milliseconds())
+	branchkit.Logf("placement", "%s: applied in %dms", verb, time.Since(start).Milliseconds())
 	return nil
+}
+
+// displayOf is the index of the display holding the window's centre, or 0.
+func displayOf(win *branchkit.WindowInfo, displays []branchkit.DisplayInfo) int {
+	cx, cy := win.X+win.W/2, win.Y+win.H/2
+	for i, d := range displays {
+		if cx >= d.X && cx < d.X+d.W && cy >= d.Y && cy < d.Y+d.H {
+			return i
+		}
+	}
+	return 0
 }
 
 // usableArea is the part of a display a window may fill: the display minus
@@ -169,22 +183,24 @@ func calculateSnapGeometry(win *branchkit.WindowInfo, screen branchkit.DisplayIn
 		} else {
 			nextIdx = (screenIdx + 1) % len(displays)
 		}
-		t := usableArea(displays[nextIdx])
-
-		// Same place relative to the usable area, so a window that filled
-		// one display's usable area fills the next one's.
-		relX := float64(win.X-a.X) / float64(a.W)
-		relY := float64(win.Y-a.Y) / float64(a.H)
-		relW := float64(win.W) / float64(a.W)
-		relH := float64(win.H) / float64(a.H)
-
-		return &branchkit.Rect{
-			X: t.X + int(math.Round(relX*float64(t.W))),
-			Y: t.Y + int(math.Round(relY*float64(t.H))),
-			W: int(math.Round(relW * float64(t.W))),
-			H: int(math.Round(relH * float64(t.H))),
-		}
+		return mapBetween(win, a, usableArea(displays[nextIdx]))
 	default:
 		return nil
+	}
+}
+
+// mapBetween puts the window at the same place relative to the target
+// usable area as it has in the source one, so a window that filled one
+// display's usable area fills the other's.
+func mapBetween(win *branchkit.WindowInfo, a, t branchkit.Rect) *branchkit.Rect {
+	relX := float64(win.X-a.X) / float64(a.W)
+	relY := float64(win.Y-a.Y) / float64(a.H)
+	relW := float64(win.W) / float64(a.W)
+	relH := float64(win.H) / float64(a.H)
+	return &branchkit.Rect{
+		X: t.X + int(math.Round(relX*float64(t.W))),
+		Y: t.Y + int(math.Round(relY*float64(t.H))),
+		W: int(math.Round(relW * float64(t.W))),
+		H: int(math.Round(relH * float64(t.H))),
 	}
 }

@@ -789,6 +789,216 @@
   },
   {
     "pattern": [
+      "screen",
+      "<number>"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "{number}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the window to a numbered screen, counted left to right (snap mode)."
+  },
+  {
+    "pattern": [
+      "screen",
+      "left"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "left"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the window to the screen to the left (snap mode)."
+  },
+  {
+    "pattern": [
+      "screen",
+      "right"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "right"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the window to the screen to the right (snap mode)."
+  },
+  {
+    "pattern": [
+      "screen",
+      "up"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "up"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the window to the screen above (snap mode)."
+  },
+  {
+    "pattern": [
+      "screen",
+      "down"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "down"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the window to the screen below (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "screen",
+      "<number>"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "{number}",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to a numbered screen, counted left to right (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "screen",
+      "left"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "left",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the screen to the left (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "screen",
+      "right"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "right",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the screen to the right (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "screen",
+      "up"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "up",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the screen above (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "screen",
+      "down"
+    ],
+    "action": {
+      "type": "placement.to_screen",
+      "params": {
+        "screen": "down",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the screen below (snap mode)."
+  },
+  {
+    "pattern": [
       "<apps>",
       "previous"
     ],

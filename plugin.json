@@ -152,6 +152,28 @@
           "required": false
         }
       ]
+    },
+    "to_screen": {
+      "uses": [
+        "native.batch_set_frames"
+      ],
+      "label": "Move Window to Screen",
+      "consequence": "reversible",
+      "fields": [
+        {
+          "key": "screen",
+          "label": "Screen (number, or left / right / up / down)",
+          "placeholder": "2",
+          "field_type": "string",
+          "required": true
+        },
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ]
     }
   },
   "provides": {
