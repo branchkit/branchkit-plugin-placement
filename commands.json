@@ -1117,5 +1117,123 @@
       "plugin.placement.desk_mode"
     ],
     "description": "Switch to the numbered desktop (desk mode)."
+  },
+  {
+    "pattern": [
+      "minimize",
+      "window"
+    ],
+    "action": {
+      "type": "placement.minimize"
+    },
+    "category": "Window State",
+    "description": "Minimize the focused window."
+  },
+  {
+    "pattern": [
+      "minimize",
+      "<apps>"
+    ],
+    "action": {
+      "type": "placement.minimize",
+      "params": {
+        "app": "{apps}"
+      }
+    },
+    "category": "Window State",
+    "description": "Minimize the named app's front window."
+  },
+  {
+    "pattern": [
+      "bring",
+      "back",
+      "window"
+    ],
+    "action": {
+      "type": "placement.bring_back"
+    },
+    "category": "Window State",
+    "description": "Bring back the window you last minimized."
+  },
+  {
+    "pattern": [
+      "bring",
+      "back",
+      "<apps>"
+    ],
+    "action": {
+      "type": "placement.bring_back",
+      "params": {
+        "app": "{apps}"
+      }
+    },
+    "category": "Window State",
+    "description": "Bring back the named app's minimized window."
+  },
+  {
+    "pattern": [
+      "full",
+      "screen",
+      "window"
+    ],
+    "action": {
+      "type": "placement.fullscreen"
+    },
+    "category": "Window State",
+    "description": "Turn full screen on or off for the focused window."
+  },
+  {
+    "pattern": [
+      "full",
+      "screen",
+      "<apps>"
+    ],
+    "action": {
+      "type": "placement.fullscreen",
+      "params": {
+        "app": "{apps}"
+      }
+    },
+    "category": "Window State",
+    "description": "Turn full screen on or off for the named app's window."
+  },
+  {
+    "pattern": [
+      "keep",
+      "in",
+      "front"
+    ],
+    "action": {
+      "type": "placement.pin"
+    },
+    "category": "Window State",
+    "description": "Keep the focused window in front of all others."
+  },
+  {
+    "pattern": [
+      "stop",
+      "keeping",
+      "in",
+      "front"
+    ],
+    "action": {
+      "type": "placement.pin",
+      "params": {
+        "pinned": false
+      }
+    },
+    "category": "Window State",
+    "description": "Stop keeping the focused window in front."
+  },
+  {
+    "pattern": [
+      "close",
+      "window"
+    ],
+    "action": {
+      "type": "placement.close"
+    },
+    "category": "Window State",
+    "description": "Close the focused window."
   }
 ]

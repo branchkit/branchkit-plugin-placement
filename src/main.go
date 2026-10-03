@@ -18,6 +18,11 @@ func main() {
 	HandleCycleWindow(p, h.handleCycleWindow)
 	HandleUndo(p, h.handleUndo)
 	HandleToScreen(p, h.handleToScreen)
+	HandleMinimize(p, h.handleMinimize)
+	HandleBringBack(p, h.handleBringBack)
+	HandleFullscreen(p, h.handleFullscreen)
+	HandlePin(p, h.handlePin)
+	HandleClose(p, h.handleClose)
 
 	p.Run()
 }

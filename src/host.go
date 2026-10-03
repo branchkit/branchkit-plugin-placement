@@ -10,6 +10,10 @@ type Host struct {
 	// history holds each window's frames from before its placements, for
 	// "put it back".
 	history *frameHistory
+	// minimized is the windows minimized by voice, for "bring back window".
+	minimized *minimizedStack
 }
 
-func newHost(p *branchkit.Plugin) *Host { return &Host{plugin: p, history: newFrameHistory()} }
+func newHost(p *branchkit.Plugin) *Host {
+	return &Host{plugin: p, history: newFrameHistory(), minimized: &minimizedStack{}}
+}

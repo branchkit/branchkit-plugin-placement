@@ -5,6 +5,26 @@ package main
 
 import "github.com/branchkit/plugin-sdk-go"
 
+// BringBackParams is the params shape for action "placement.bring_back (Bring Back a Minimized Window)".
+type BringBackParams struct {
+	App *string `json:"app,omitempty"`
+}
+
+// HandleBringBack registers a typed handler for action "placement.bring_back (Bring Back a Minimized Window)".
+func HandleBringBack(p *branchkit.Plugin, fn func(BringBackParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.bring_back", fn)
+}
+
+// CloseParams is the params shape for action "placement.close (Close Window)".
+type CloseParams struct {
+	App *string `json:"app,omitempty"`
+}
+
+// HandleClose registers a typed handler for action "placement.close (Close Window)".
+func HandleClose(p *branchkit.Plugin, fn func(CloseParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.close", fn)
+}
+
 // CycleWindowParams is the params shape for action "placement.cycle_window (Next Window of This App)".
 type CycleWindowParams struct {
 }
@@ -22,6 +42,26 @@ type DeskSwitchParams struct {
 // HandleDeskSwitch registers a typed handler for action "placement.desk_switch (Switch Desktop)".
 func HandleDeskSwitch(p *branchkit.Plugin, fn func(DeskSwitchParams, *branchkit.OnActionRequest) (any, error)) {
 	branchkit.HandleActionTyped(p, "placement.desk_switch", fn)
+}
+
+// FullscreenParams is the params shape for action "placement.fullscreen (Toggle Full Screen)".
+type FullscreenParams struct {
+	App *string `json:"app,omitempty"`
+}
+
+// HandleFullscreen registers a typed handler for action "placement.fullscreen (Toggle Full Screen)".
+func HandleFullscreen(p *branchkit.Plugin, fn func(FullscreenParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.fullscreen", fn)
+}
+
+// MinimizeParams is the params shape for action "placement.minimize (Minimize Window)".
+type MinimizeParams struct {
+	App *string `json:"app,omitempty"`
+}
+
+// HandleMinimize registers a typed handler for action "placement.minimize (Minimize Window)".
+func HandleMinimize(p *branchkit.Plugin, fn func(MinimizeParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.minimize", fn)
 }
 
 // MoveToSpaceParams is the params shape for action "placement.move_to_space (Move Window to Space)".
@@ -44,6 +84,17 @@ type OverviewParams struct {
 // HandleOverview registers a typed handler for action "placement.overview (Show All Windows)".
 func HandleOverview(p *branchkit.Plugin, fn branchkit.ActionHandlerFunc) {
 	p.HandleAction("placement.overview", fn)
+}
+
+// PinParams is the params shape for action "placement.pin (Keep Window in Front)".
+type PinParams struct {
+	Pinned *bool   `json:"pinned,omitempty"`
+	App    *string `json:"app,omitempty"`
+}
+
+// HandlePin registers a typed handler for action "placement.pin (Keep Window in Front)".
+func HandlePin(p *branchkit.Plugin, fn func(PinParams, *branchkit.OnActionRequest) (any, error)) {
+	branchkit.HandleActionTyped(p, "placement.pin", fn)
 }
 
 // SnapPosition is a generated enum type.

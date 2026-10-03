@@ -12,12 +12,17 @@
     "capabilities": {
       "uses": [
         "native.batch_set_frames",
+        "native.close_window",
         "native.cursor_info",
         "native.focused_window_id",
         "native.list_spaces",
+        "native.minimize_window",
         "native.move_window_to_space",
+        "native.pin_window_above",
         "native.raise_window",
         "native.switch_space",
+        "native.toggle_fullscreen",
+        "native.unminimize_window",
         "native.warp_cursor",
         "native.window_bounds",
         "native.world_model"
@@ -174,6 +179,87 @@
           "required": false
         }
       ]
+    },
+    "minimize": {
+      "uses": [
+        "native.minimize_window"
+      ],
+      "label": "Minimize Window",
+      "fields": [
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ],
+      "consequence": "reversible"
+    },
+    "bring_back": {
+      "uses": [
+        "native.unminimize_window"
+      ],
+      "label": "Bring Back a Minimized Window",
+      "fields": [
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ],
+      "consequence": "reversible"
+    },
+    "fullscreen": {
+      "uses": [
+        "native.toggle_fullscreen"
+      ],
+      "label": "Toggle Full Screen",
+      "fields": [
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ],
+      "consequence": "reversible"
+    },
+    "pin": {
+      "uses": [
+        "native.pin_window_above"
+      ],
+      "label": "Keep Window in Front",
+      "fields": [
+        {
+          "key": "pinned",
+          "label": "In front (off to stop)",
+          "field_type": "boolean",
+          "required": false
+        },
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ],
+      "consequence": "reversible"
+    },
+    "close": {
+      "uses": [
+        "native.close_window"
+      ],
+      "label": "Close Window",
+      "fields": [
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
+          "required": false
+        }
+      ],
+      "consequence": "irreversible"
     }
   },
   "provides": {

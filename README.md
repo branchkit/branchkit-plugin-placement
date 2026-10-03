@@ -14,8 +14,9 @@ can build on Placement's events (below) the way any third-party plugin would.
 ## What it provides
 
 **Actions** (`placement.*`): `snap` (halves, thirds, two-thirds, quarters,
-maximize, almost maximize, center, next or previous display), `undo`,
-`move_to_space`, `desk_switch`, `cycle_window`, `overview`.
+maximize, almost maximize, center, next or previous display), `to_screen`,
+`undo`, `move_to_space`, `desk_switch`, `cycle_window`, `overview`, and window
+state: `minimize`, `bring_back`, `fullscreen`, `pin`, `close`.
 
 **Events**: `placement.snapped` and `placement.moved_to_space`, emitted just
 before the window moves, so a tiler can release the window from its layout
