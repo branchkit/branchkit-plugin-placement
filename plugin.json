@@ -76,7 +76,7 @@
           "key": "position",
           "label": "Position",
           "field_type": "enum",
-          "enum_values": ["left", "right", "maximize", "center", "next", "prev"],
+          "enum_values": ["left", "right", "top", "bottom", "maximize", "almost_maximize", "center", "left_third", "center_third", "right_third", "left_two_thirds", "right_two_thirds", "top_left", "top_right", "bottom_left", "bottom_right", "next", "prev"],
           "required": false
         }
       ]

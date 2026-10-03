@@ -121,21 +121,50 @@ func calculateSnapGeometry(win *branchkit.WindowInfo, screen branchkit.DisplayIn
 		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W / 2, H: a.H}
 	case "right":
 		return &branchkit.Rect{X: a.X + a.W/2, Y: a.Y, W: a.W - a.W/2, H: a.H}
-	case "top", "up":
+	case "top":
 		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W, H: a.H / 2}
-	case "bottom", "down":
+	case "bottom":
 		return &branchkit.Rect{X: a.X, Y: a.Y + a.H/2, W: a.W, H: a.H - a.H/2}
-	case "maximize", "full":
+	case "maximize":
 		return &branchkit.Rect{X: a.X, Y: a.Y, W: a.W, H: a.H}
+	case "almost_maximize":
+		// 90% of the usable area, centred: the desktop shows round the edge.
+		dx, dy := a.W/20, a.H/20
+		return &branchkit.Rect{X: a.X + dx, Y: a.Y + dy, W: a.W - 2*dx, H: a.H - 2*dy}
 	case "center":
 		return &branchkit.Rect{X: a.X + a.W/4, Y: a.Y + a.H/4, W: a.W / 2, H: a.H / 2}
-	case "next", "next monitor", "other screen", "move next",
-		"prev", "previous monitor", "move back":
+	case "left_third", "center_third", "right_third", "left_two_thirds", "right_two_thirds":
+		// The last third takes the leftover pixels, so a third and the
+		// two-thirds beside it tile the area exactly.
+		t := a.W / 3
+		switch direction {
+		case "left_third":
+			return &branchkit.Rect{X: a.X, Y: a.Y, W: t, H: a.H}
+		case "center_third":
+			return &branchkit.Rect{X: a.X + t, Y: a.Y, W: t, H: a.H}
+		case "right_third":
+			return &branchkit.Rect{X: a.X + 2*t, Y: a.Y, W: a.W - 2*t, H: a.H}
+		case "left_two_thirds":
+			return &branchkit.Rect{X: a.X, Y: a.Y, W: 2 * t, H: a.H}
+		default: // right_two_thirds
+			return &branchkit.Rect{X: a.X + t, Y: a.Y, W: a.W - t, H: a.H}
+		}
+	case "top_left", "top_right", "bottom_left", "bottom_right":
+		hw, hh := a.W/2, a.H/2
+		r := branchkit.Rect{X: a.X, Y: a.Y, W: hw, H: hh}
+		if direction == "top_right" || direction == "bottom_right" {
+			r.X, r.W = a.X+hw, a.W-hw
+		}
+		if direction == "bottom_left" || direction == "bottom_right" {
+			r.Y, r.H = a.Y+hh, a.H-hh
+		}
+		return &r
+	case "next", "prev":
 		if len(displays) < 2 {
 			return nil
 		}
 		var nextIdx int
-		if direction == "prev" || direction == "previous monitor" || direction == "move back" {
+		if direction == "prev" {
 			nextIdx = (screenIdx + len(displays) - 1) % len(displays)
 		} else {
 			nextIdx = (screenIdx + 1) % len(displays)

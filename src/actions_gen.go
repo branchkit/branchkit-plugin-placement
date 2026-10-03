@@ -49,12 +49,24 @@ func HandleOverview(p *branchkit.Plugin, fn branchkit.ActionHandlerFunc) {
 type SnapPosition string
 
 const (
-	SnapPositionLeft     SnapPosition = "left"
-	SnapPositionRight    SnapPosition = "right"
-	SnapPositionMaximize SnapPosition = "maximize"
-	SnapPositionCenter   SnapPosition = "center"
-	SnapPositionNext     SnapPosition = "next"
-	SnapPositionPrev     SnapPosition = "prev"
+	SnapPositionLeft           SnapPosition = "left"
+	SnapPositionRight          SnapPosition = "right"
+	SnapPositionTop            SnapPosition = "top"
+	SnapPositionBottom         SnapPosition = "bottom"
+	SnapPositionMaximize       SnapPosition = "maximize"
+	SnapPositionAlmostMaximize SnapPosition = "almost_maximize"
+	SnapPositionCenter         SnapPosition = "center"
+	SnapPositionLeftThird      SnapPosition = "left_third"
+	SnapPositionCenterThird    SnapPosition = "center_third"
+	SnapPositionRightThird     SnapPosition = "right_third"
+	SnapPositionLeftTwoThirds  SnapPosition = "left_two_thirds"
+	SnapPositionRightTwoThirds SnapPosition = "right_two_thirds"
+	SnapPositionTopLeft        SnapPosition = "top_left"
+	SnapPositionTopRight       SnapPosition = "top_right"
+	SnapPositionBottomLeft     SnapPosition = "bottom_left"
+	SnapPositionBottomRight    SnapPosition = "bottom_right"
+	SnapPositionNext           SnapPosition = "next"
+	SnapPositionPrev           SnapPosition = "prev"
 )
 
 // SnapParams is the params shape for action "placement.snap (Snap Window)".

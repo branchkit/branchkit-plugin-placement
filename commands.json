@@ -127,6 +127,252 @@
   },
   {
     "pattern": [
+      "half",
+      "up"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the top half (snap mode)."
+  },
+  {
+    "pattern": [
+      "half",
+      "down"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the bottom half (snap mode)."
+  },
+  {
+    "pattern": [
+      "third",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "left_third"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the left third (snap mode)."
+  },
+  {
+    "pattern": [
+      "third",
+      "middle"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "center_third"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the middle third (snap mode)."
+  },
+  {
+    "pattern": [
+      "third",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "right_third"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the right third (snap mode)."
+  },
+  {
+    "pattern": [
+      "two",
+      "thirds",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "left_two_thirds"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the left two thirds (snap mode)."
+  },
+  {
+    "pattern": [
+      "two",
+      "thirds",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "right_two_thirds"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the right two thirds (snap mode)."
+  },
+  {
+    "pattern": [
+      "corner",
+      "top",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top_left"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the top-left quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "corner",
+      "top",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top_right"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the top-right quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "corner",
+      "bottom",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom_left"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the bottom-left quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "corner",
+      "bottom",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom_right"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to the bottom-right quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "almost",
+      "maximize"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "almost_maximize"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the window to almost the whole screen, with a margin (snap mode)."
+  },
+  {
+    "pattern": [
       "next"
     ],
     "action": {

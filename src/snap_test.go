@@ -65,7 +65,7 @@ func TestSnapBottom(t *testing.T) {
 
 func TestSnapMaximize(t *testing.T) {
 	win, screen, displays := makeTestWorld()
-	for _, dir := range []string{"maximize", "full"} {
+	for _, dir := range []string{"maximize"} {
 		r := calculateSnapGeometry(win, screen, 0, displays, dir)
 		if r == nil {
 			t.Fatalf("%s: expected geometry", dir)
@@ -169,7 +169,7 @@ func TestSnapStaysInsideTheUsableArea(t *testing.T) {
 	win, _, _ := makeTestWorld()
 	d := branchkit.DisplayInfo{ID: 1, X: 0, Y: 0, W: 1512, H: 982,
 		VisibleX: 64, VisibleY: 38, VisibleW: 1448, VisibleH: 944}
-	for _, dir := range []string{"left", "right", "top", "bottom", "maximize", "center"} {
+	for _, dir := range []string{"left", "right", "top", "bottom", "maximize", "almost_maximize", "center", "left_third", "center_third", "right_third", "left_two_thirds", "right_two_thirds", "top_left", "top_right", "bottom_left", "bottom_right"} {
 		r := calculateSnapGeometry(win, d, 0, []branchkit.DisplayInfo{d}, dir)
 		if r == nil {
 			t.Fatalf("%s: expected geometry", dir)
