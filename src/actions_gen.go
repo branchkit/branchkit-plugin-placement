@@ -29,6 +29,7 @@ type MoveToSpaceParams struct {
 	Space    string  `json:"space"`
 	Stay     *bool   `json:"stay,omitempty"`
 	WindowID *string `json:"window_id,omitempty"`
+	App      *string `json:"app,omitempty"`
 }
 
 // HandleMoveToSpace registers a typed handler for action "placement.move_to_space (Move Window to Space)".
@@ -72,6 +73,7 @@ const (
 // SnapParams is the params shape for action "placement.snap (Snap Window)".
 type SnapParams struct {
 	Position *SnapPosition `json:"position,omitempty"`
+	App      *string       `json:"app,omitempty"`
 }
 
 // HandleSnap registers a typed handler for action "placement.snap (Snap Window)".

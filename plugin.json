@@ -26,12 +26,19 @@
   },
   "version": "1.0.0",
   "min_api_version": "0.2.0",
-  "description": "Put any window where you want it \u2014 a position, a screen, a desktop \u2014 without a pointer. One-shot moves using each OS's own window model; no tiling engine.",
+  "description": "Put any window where you want it — a position, a screen, a desktop — without a pointer. One-shot moves using each OS's own window model; no tiling engine.",
   "author": "BranchKit",
   "publisher": "github:branchkit",
   "dev": {
     "build": [
-      ["go", "build", "-ldflags=-s -w", "-o", "../placement-plugin", "."]
+      [
+        "go",
+        "build",
+        "-ldflags=-s -w",
+        "-o",
+        "../placement-plugin",
+        "."
+      ]
     ],
     "build_dir": "src"
   },
@@ -41,7 +48,10 @@
   },
   "action_prefix": "placement",
   "action_types": {
-    "cycle_window": { "uses": ["native.raise_window"],
+    "cycle_window": {
+      "uses": [
+        "native.raise_window"
+      ],
       "label": "Next Window of This App",
       "consequence": "reversible",
       "fields": []
@@ -55,7 +65,10 @@
       "label": "Show All Windows",
       "fields": []
     },
-    "desk_switch": { "uses": ["native.switch_space"],
+    "desk_switch": {
+      "uses": [
+        "native.switch_space"
+      ],
       "label": "Switch Desktop",
       "consequence": "reversible",
       "fields": [
@@ -76,12 +89,41 @@
           "key": "position",
           "label": "Position",
           "field_type": "enum",
-          "enum_values": ["left", "right", "top", "bottom", "maximize", "almost_maximize", "center", "left_third", "center_third", "right_third", "left_two_thirds", "right_two_thirds", "top_left", "top_right", "bottom_left", "bottom_right", "next", "prev"],
+          "enum_values": [
+            "left",
+            "right",
+            "top",
+            "bottom",
+            "maximize",
+            "almost_maximize",
+            "center",
+            "left_third",
+            "center_third",
+            "right_third",
+            "left_two_thirds",
+            "right_two_thirds",
+            "top_left",
+            "top_right",
+            "bottom_left",
+            "bottom_right",
+            "next",
+            "prev"
+          ],
+          "required": false
+        },
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
+          "field_type": "string",
           "required": false
         }
       ]
     },
-    "move_to_space": { "uses": ["native.move_window_to_space", "native.switch_space"],
+    "move_to_space": {
+      "uses": [
+        "native.move_window_to_space",
+        "native.switch_space"
+      ],
       "label": "Move Window to Space",
       "fields": [
         {
@@ -100,6 +142,12 @@
         {
           "key": "window_id",
           "label": "Window ID (defaults to the active window)",
+          "field_type": "string",
+          "required": false
+        },
+        {
+          "key": "app",
+          "label": "App (defaults to the focused window)",
           "field_type": "string",
           "required": false
         }
@@ -125,7 +173,7 @@
           "type": "as_gates",
           "scoped": true
         },
-        "description": "Snap mode \u2014 direction words snap windows without repeating 'snap'."
+        "description": "Snap mode — direction words snap windows without repeating 'snap'."
       },
       "plugin.placement.desk_mode": {
         "preset": "tag",
@@ -144,7 +192,7 @@
           "type": "as_gates",
           "scoped": true
         },
-        "description": "Desk mode \u2014 number words switch desktops without repeating 'desk'."
+        "description": "Desk mode — number words switch desktops without repeating 'desk'."
       }
     },
     "events": {
@@ -158,7 +206,8 @@
   },
   "consumes": {
     "collections": [
-      "number"
+      "number",
+      "apps"
     ]
   },
   "implements": {

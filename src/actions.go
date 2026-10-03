@@ -38,7 +38,22 @@ func (h *Host) handleWindowsSnap(p SnapParams, req *branchkit.OnActionRequest) (
 	if p.Position == nil {
 		return nil, fmt.Errorf("snap: no position given")
 	}
-	return nil, h.handleSnap(req.ActiveWindowID, string(*p.Position))
+	if p.App == nil || *p.App == "" {
+		return nil, h.handleSnap(req.ActiveWindowID, string(*p.Position))
+	}
+	// A named app: place its window and bring it forward, so the person
+	// sees what moved without having had to focus it first.
+	winID, err := h.namedWindow(*p.App)
+	if err != nil {
+		return nil, fmt.Errorf("snap: %w", err)
+	}
+	if err := h.handleSnap(&winID, string(*p.Position)); err != nil {
+		return nil, err
+	}
+	if err := h.plugin.NativeRaiseWindow(branchkit.NativeRaiseWindowRequest{WindowID: winID}); err != nil {
+		branchkit.Logf("placement", "snap: raise %s: %v", winID, err)
+	}
+	return nil, nil
 }
 
 func (h *Host) handleWindowsMoveToSpace(p MoveToSpaceParams, req *branchkit.OnActionRequest) (any, error) {
@@ -52,6 +67,12 @@ func (h *Host) handleWindowsMoveToSpace(p MoveToSpaceParams, req *branchkit.OnAc
 	windowID := req.ActiveWindowID
 	if p.WindowID != nil && *p.WindowID != "" {
 		windowID = p.WindowID
+	} else if p.App != nil && *p.App != "" {
+		id, err := h.namedWindow(*p.App)
+		if err != nil {
+			return nil, fmt.Errorf("move to desktop: %w", err)
+		}
+		windowID = &id
 	}
 	return nil, h.handleMoveToSpace(windowID, space, p.Stay != nil && *p.Stay)
 }

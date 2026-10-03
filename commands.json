@@ -67,6 +67,27 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "left",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the left half (snap mode)."
+  },
+  {
+    "pattern": [
       "right"
     ],
     "action": {
@@ -83,6 +104,27 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the right half (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "right",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the right half (snap mode)."
   },
   {
     "pattern": [
@@ -108,6 +150,30 @@
   },
   {
     "pattern": [
+      "<apps>",
+      [
+        "full",
+        "maximize"
+      ]
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "maximize",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Maximize the named app's window to fill the screen (snap mode)."
+  },
+  {
+    "pattern": [
       "center"
     ],
     "action": {
@@ -124,6 +190,27 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Center the window on screen (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "center"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "center",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Center the named app's window on screen (snap mode)."
   },
   {
     "pattern": [
@@ -147,6 +234,28 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "half",
+      "up"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the top half (snap mode)."
+  },
+  {
+    "pattern": [
       "half",
       "down"
     ],
@@ -164,6 +273,28 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the bottom half (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "half",
+      "down"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the bottom half (snap mode)."
   },
   {
     "pattern": [
@@ -187,6 +318,28 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "third",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "left_third",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the left third (snap mode)."
+  },
+  {
+    "pattern": [
       "third",
       "middle"
     ],
@@ -207,6 +360,28 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "third",
+      "middle"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "center_third",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the middle third (snap mode)."
+  },
+  {
+    "pattern": [
       "third",
       "right"
     ],
@@ -224,6 +399,28 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the right third (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "third",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "right_third",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the right third (snap mode)."
   },
   {
     "pattern": [
@@ -248,6 +445,29 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "two",
+      "thirds",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "left_two_thirds",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the left two thirds (snap mode)."
+  },
+  {
+    "pattern": [
       "two",
       "thirds",
       "right"
@@ -266,6 +486,29 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the right two thirds (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "two",
+      "thirds",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "right_two_thirds",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the right two thirds (snap mode)."
   },
   {
     "pattern": [
@@ -290,6 +533,29 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "corner",
+      "top",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top_left",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the top-left quarter (snap mode)."
+  },
+  {
+    "pattern": [
       "corner",
       "top",
       "right"
@@ -308,6 +574,29 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the top-right quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "corner",
+      "top",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "top_right",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the top-right quarter (snap mode)."
   },
   {
     "pattern": [
@@ -332,6 +621,29 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "corner",
+      "bottom",
+      "left"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom_left",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the bottom-left quarter (snap mode)."
+  },
+  {
+    "pattern": [
       "corner",
       "bottom",
       "right"
@@ -350,6 +662,29 @@
       "plugin.placement.snap_mode"
     ],
     "description": "Snap the window to the bottom-right quarter (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "corner",
+      "bottom",
+      "right"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "bottom_right",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to the bottom-right quarter (snap mode)."
   },
   {
     "pattern": [
@@ -373,6 +708,28 @@
   },
   {
     "pattern": [
+      "<apps>",
+      "almost",
+      "maximize"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "almost_maximize",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Snap the named app's window to almost the whole screen, with a margin (snap mode)."
+  },
+  {
+    "pattern": [
       "next"
     ],
     "action": {
@@ -388,7 +745,28 @@
     "sets_tags": [
       "plugin.placement.snap_mode"
     ],
-    "description": "Snap to the next position in the cycle (snap mode)."
+    "description": "Move the window to the next display (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "next"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "next",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the next display (snap mode)."
   },
   {
     "pattern": [
@@ -407,7 +785,28 @@
     "sets_tags": [
       "plugin.placement.snap_mode"
     ],
-    "description": "Snap to the previous position in the cycle (snap mode)."
+    "description": "Move the window to the previous display (snap mode)."
+  },
+  {
+    "pattern": [
+      "<apps>",
+      "previous"
+    ],
+    "action": {
+      "type": "placement.snap",
+      "params": {
+        "position": "prev",
+        "app": "{apps}"
+      }
+    },
+    "category": "Snap Mode",
+    "requires_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "sets_tags": [
+      "plugin.placement.snap_mode"
+    ],
+    "description": "Move the named app's window to the previous display (snap mode)."
   },
   {
     "pattern": [
@@ -427,6 +826,23 @@
   },
   {
     "pattern": [
+      "blank",
+      "<apps>",
+      "desk",
+      "<number>"
+    ],
+    "action": {
+      "type": "placement.move_to_space",
+      "params": {
+        "space": "{number}",
+        "app": "{apps}"
+      }
+    },
+    "category": "Windowing",
+    "description": "Move the named app's window to another desktop and follow it there."
+  },
+  {
+    "pattern": [
       "stash",
       "window",
       "desk",
@@ -441,6 +857,24 @@
     },
     "category": "Windowing",
     "description": "Move the current window to another desktop but stay here."
+  },
+  {
+    "pattern": [
+      "stash",
+      "<apps>",
+      "desk",
+      "<number>"
+    ],
+    "action": {
+      "type": "placement.move_to_space",
+      "params": {
+        "space": "{number}",
+        "stay": true,
+        "app": "{apps}"
+      }
+    },
+    "category": "Windowing",
+    "description": "Move the named app's window to another desktop but stay here."
   },
   {
     "pattern": [
